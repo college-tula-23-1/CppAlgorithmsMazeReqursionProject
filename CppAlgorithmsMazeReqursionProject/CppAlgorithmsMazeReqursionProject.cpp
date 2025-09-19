@@ -2,16 +2,18 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 #include "Console.h"
 
-const char WALL{ 178 };
-const char SPACE{ 32 };
-const char WAY{ 249 };
+const char WALL = 178;
+const char SPACE = 32 ;
+const char WAY = 249;
 
 typedef std::vector<std::vector<char>> Maze;
 
 void MazeLoad(Maze& maze);
+void MazeConsole(const Maze& maze);
 
 int main()
 {
@@ -19,8 +21,9 @@ int main()
 
     Console console;
     console.Clear();
-
+     
     MazeLoad(maze);
+    MazeConsole(maze);
     
     
     console.KeyPressed();
@@ -47,12 +50,37 @@ void MazeLoad(Maze& maze)
     std::string fileName;
 
     for (auto entry : std::filesystem::directory_iterator(currentPath))
-    {
         if (entry.path().extension() == ".maze" && !(--pos))
-        {
             fileName = entry.path().filename().string();
-        }
-    }
 
     std::cout << fileName << "\n";
+
+    std::ifstream fileMaze(fileName, std::ios::in);
+    std::string lineMaze;
+    
+    while (std::getline(fileMaze, lineMaze))
+    {
+        std::vector<char> line;
+        for (auto symbol : lineMaze)
+            switch (symbol)
+            {
+            case '#':
+                line.push_back(WALL); break;
+            case ' ':
+                line.push_back(SPACE); break;
+            }
+        maze.push_back(line);
+    }
+
+    fileMaze.close();
+}
+
+void MazeConsole(const Maze& maze)
+{
+    for (auto line : maze)
+    {
+        for (auto item : line)
+            std::cout << item;
+        std::cout << "\n";
+    }
 }
