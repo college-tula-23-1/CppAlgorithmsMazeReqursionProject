@@ -1,86 +1,11 @@
-﻿#include <filesystem>
-#include <algorithm>
-#include <iostream>
-#include <vector>
-#include <fstream>
+﻿#include <iostream>
 
-#include "Console.h"
-
-const char WALL = 178;
-const char SPACE = 32 ;
-const char WAY = 249;
-
-typedef std::vector<std::vector<char>> Maze;
-
-void MazeLoad(Maze& maze);
-void MazeConsole(const Maze& maze);
+#include "Maze.h"
 
 int main()
 {
     Maze maze;
-
-    Console console;
-    console.Clear();
-     
-    MazeLoad(maze);
-    MazeConsole(maze);
-    
-    
-    console.KeyPressed();
+    maze.MazeLoad();
+    maze.MazeConsole();
 }
 
-void MazeLoad(Maze& maze)
-{
-    auto currentPath = std::filesystem::current_path();
-
-    int pos{ 0 };
-    std::ranges::for_each(
-        std::filesystem::directory_iterator(currentPath),
-        [&pos](auto& entry) {
-            if (!entry.is_directory()
-                && entry.path().extension() == ".maze")
-                std::cout << ++pos << ": "
-                << entry.path().filename().string() << "\n";
-        }
-    );
-
-    std::cout << "\nInput number of maze: ";
-    std::cin >> pos;
-
-    std::string fileName;
-
-    for (auto entry : std::filesystem::directory_iterator(currentPath))
-        if (entry.path().extension() == ".maze" && !(--pos))
-            fileName = entry.path().filename().string();
-
-    std::cout << fileName << "\n";
-
-    std::ifstream fileMaze(fileName, std::ios::in);
-    std::string lineMaze;
-    
-    while (std::getline(fileMaze, lineMaze))
-    {
-        std::vector<char> line;
-        for (auto symbol : lineMaze)
-            switch (symbol)
-            {
-            case '#':
-                line.push_back(WALL); break;
-            case ' ':
-                line.push_back(SPACE); break;
-            }
-        maze.push_back(line);
-    }
-
-    fileMaze.close();
-}
-
-void MazeConsole(const Maze& maze)
-{
-    for (auto line : maze)
-    {
-        for (auto item : line)
-            std::cout << item;
-        std::cout << "\n";
-    }
-}
