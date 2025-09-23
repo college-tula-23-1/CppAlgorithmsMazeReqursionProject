@@ -50,6 +50,47 @@ void Maze::FindFinish()
         }
 }
 
+bool Maze::IsValidWay(int row, int column)
+{
+    int height = maze.size();
+    int width = maze[0].size();
+
+    if (row < 0 || row >= height || column < 0 || column >= width)
+        return false;
+    if (maze[row][column] == (char)MazeChar::Wall)
+        return false;
+    if (maze[row][column] == (char)MazeChar::Way)
+        return false;
+
+    return true;
+}
+
+bool Maze::Next(int row, int column)
+{
+    if (row == finish.row && column == finish.column)
+    {
+        maze[row][column] = (char)MazeChar::Way;
+        return true;
+    }
+        
+
+    for (auto diff : diffs)
+    {
+        if (IsValidWay(row + diff[0], column + diff[1]))
+        {
+            maze[row][column] = (char)MazeChar::Way;
+            MazeConsole();
+
+            if (Next(row + diff[0], column + diff[1]))
+                return true;
+
+            maze[row][column] = (char)MazeChar::Space;
+            MazeConsole();
+        }
+    }
+    return false;
+}
+
 void Maze::MazeLoad()
 {
     auto currentPath = std::filesystem::current_path();
@@ -106,6 +147,12 @@ void Maze::MazeConsole() const
             std::cout << item;
         std::cout << "\n";
     }
-    std::cout << "start: [" << start.row << "," << start.column << "]\n";
-    std::cout << "finish: [" << finish.row << "," << finish.column << "]\n";
+    std::cout << "\n";
+    //std::cout << "start: [" << start.row << "," << start.column << "]\n";
+    //std::cout << "finish: [" << finish.row << "," << finish.column << "]\n";
+}
+
+void Maze::MazeCreateWay()
+{
+    Next(start.row, start.column);
 }

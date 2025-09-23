@@ -132,6 +132,9 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="Maze.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="simple.maze" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
